@@ -1,5 +1,5 @@
 #!/bin/sh
-# module load python/3.7
+# module load python/3.9
 # module load cuda
 
 virtualenv --no-download $SLURM_TMPDIR/env
