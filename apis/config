@@ -1,0 +1,44 @@
+Host *
+  User $USER
+
+Host narval-login
+  HostName narval.computecanada.ca
+  User $USER
+
+Host cedar-login
+  HostName cedar.computecanada.ca
+  User $USER
+  ForwardAgent Yes
+
+Host graham-login
+  HostName graham.computecanada.ca
+  User $USER
+
+Host beluga-login
+  HostName beluga.computecanada.ca
+  User $USER
+
+Host cedarcompnode
+  HostName cdr351
+  ProxyJump cedar.computecanada.ca
+  User $USER
+  ForwardAgent Yes
+
+Host grahamcompnode
+  User $USER
+  HostName gra796
+  ProxyJump graham.computecanada.ca
+  ForwardAgent Yes
+
+  Host belugacompnode
+  HostName bg12102
+  ProxyJump beluga.computecanada.ca
+  User $USER
+  ForwardAgent Yes  
+
+Host narvalcompnode
+  HostName nl20201
+  ProxyJump narval.computecanada.ca
+  User $USER
+  ForwardAgent Yes  
+  

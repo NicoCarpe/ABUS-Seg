@@ -9,7 +9,7 @@ import numpy as np
 
 ### Training Image Conversion ###
 
-baseDir = os.path.normpath('/mnt/c/Users/ncarp/Documents/code/TDSC-ABUS-2023/datasets/train_data/Data')
+baseDir = os.path.normpath('~/scratch/TDSC-ABUS-2023/datasets/train_data/Data')
 
 files = glob(baseDir + '/*.nrrd')
 
@@ -25,14 +25,14 @@ for file in files:
 
   #save nifti
   img = nib.Nifti1Image(data, np.eye(4))
-  nib.save(img,os.path.join('/mnt/c/Users/ncarp/Documents/code/TDSC-ABUS-2023/datasets/nnUNet_raw/Dataset501_BreastTumour/imagesTr',  'ABUS_' + file[-8:-5] + '_0000' + '.nii.gz'))
+  nib.save(img,os.path.join('~/scratch/TDSC-ABUS-2023/datasets/nnUNet_raw/Dataset501_BreastTumour/imagesTr',  'ABUS_' + file[-8:-5] + '_0000' + '.nii.gz'))
 
 
 
 
 ### Training Lable Conversion ###
 
-baseDir = os.path.normpath('/mnt/c/Users/ncarp/Documents/code/TDSC-ABUS-2023/datasets/train_data/MASK')
+baseDir = os.path.normpath('~/scratch/TDSC-ABUS-2023/datasets/train_data/MASK')
 
 files = glob(baseDir + '/*.nrrd')
 
@@ -48,4 +48,4 @@ for file in files:
 
   #save nifti
   img = nib.Nifti1Image(data, np.eye(4))
-  nib.save(img,os.path.join('/mnt/c/Users/ncarp/Documents/code/TDSC-ABUS-2023/datasets/nnUNet_raw/Dataset501_BreastTumour/labelsTr',  'ABUS_' + file[-8:-5] + '.nii.gz'))
+  nib.save(img,os.path.join('~/scratch/TDSC-ABUS-2023/datasets/nnUNet_raw/Dataset501_BreastTumour/labelsTr',  'ABUS_' + file[-8:-5] + '.nii.gz'))
