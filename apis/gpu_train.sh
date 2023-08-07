@@ -11,9 +11,9 @@
 sh nntrain.sh "$1" "$2" "$3"
 
 
-## for i in {0..4}; do sbatch gpu_train.sh 300 3d_fullres $i; done
-## for i in {0..4}; do sbatch gpu_train.sh 300 2d $i; done
+## for i in {0..4}; do sbatch gpu_train.sh 501 3d_fullres $i; done
+## for i in {0..4}; do sbatch gpu_train.sh 501 2d $i; done
 
-## for i in {0..4}; do sbatch gpu_train.sh 300 3d_lowres $i; done
-## for i in {0..4}; do sbatch gpu_train.sh 300 3d_cascade_fullres $i; done
+## for i in {0..4}; do sbatch gpu_train.sh 501 3d_lowres $i; done
+## for i in {0..4}; do sbatch gpu_train.sh 501 3d_cascade_fullres $i; done
 
