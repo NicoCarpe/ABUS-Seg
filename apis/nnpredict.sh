@@ -19,6 +19,6 @@ export OUTPUT_FOLDER=/home/$USER/scratch/TDSC-ABUS-2023/apis/output/20220720_t1/
 export FOLDER_WITH_TEST_CASES=/home/$USER/scratch/TDSC-ABUS-2023/apis/nnUNet_raw_data/Dataset501_BreastTumour/imagesTs/
 
 
-nnUNet_predict -i $FOLDER_WITH_TEST_CASES -o $OUTPUT_FOLDER_MODEL1 -tr nnUNetTrainerV2_Loss_DiceTopK10Focal -ctr nnUNetTrainerV2CascadeFullRes -m 2d -p nnUNetPlansv2.1 -t Dataset501_BreastTumour -z
-nnUNet_predict -i $FOLDER_WITH_TEST_CASES -o $OUTPUT_FOLDER_MODEL2 -tr nnUNetTrainerV2_Loss_DiceTopK10Focal -ctr nnUNetTrainerV2CascadeFullRes -m 3d_fullres -p nnUNetPlansv2.1 -t Dataset501_BreastTumour -z
-nnUNet_ensemble -f $OUTPUT_FOLDER_MODEL1 $OUTPUT_FOLDER_MODEL2 -o $OUTPUT_FOLDER -pp /scratch/$USER/TDSC-ABUS-2023/apis/trained_models/nnUNet/ensembles/Dataset501_BreastTumour/ensemble_2d__nnUNetTrainerV2_Loss_DiceTopK10Focal__nnUNetPlansv2.1--3d_fullres__nnUNetTrainerV2_Loss_DiceTopK10Focal__nnUNetPlansv2.1/postprocessing.json
+nnUNetv2_predict -i $FOLDER_WITH_TEST_CASES -o $OUTPUT_FOLDER_MODEL1 -tr nnUNetTrainerV2_Loss_DiceTopK10Focal -ctr nnUNetTrainerV2CascadeFullRes -m 2d -p nnUNetPlansv2.1 -t Dataset501_BreastTumour -z
+nnUNetv2_predict -i $FOLDER_WITH_TEST_CASES -o $OUTPUT_FOLDER_MODEL2 -tr nnUNetTrainerV2_Loss_DiceTopK10Focal -ctr nnUNetTrainerV2CascadeFullRes -m 3d_fullres -p nnUNetPlansv2.1 -t Dataset501_BreastTumour -z
+nnUNetv2_ensemble -f $OUTPUT_FOLDER_MODEL1 $OUTPUT_FOLDER_MODEL2 -o $OUTPUT_FOLDER -pp /scratch/$USER/TDSC-ABUS-2023/apis/trained_models/nnUNet/ensembles/Dataset501_BreastTumour/ensemble_2d__nnUNetTrainerV2_Loss_DiceTopK10Focal__nnUNetPlansv2.1--3d_fullres__nnUNetTrainerV2_Loss_DiceTopK10Focal__nnUNetPlansv2.1/postprocessing.json

@@ -1,6 +1,6 @@
 { 
  "channel_names": {
-   "0": "CT"
+   "0": "Ultrasound"
  },
 
  "labels": {
@@ -8,7 +8,7 @@
    "tumour": 1
  }, 
 
- "numTraining": 100,
+ "numTraining": 5,
 
  "file_ending": ".nii.gz"
  }

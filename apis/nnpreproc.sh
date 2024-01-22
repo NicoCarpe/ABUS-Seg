@@ -10,4 +10,4 @@ export nnUNet_raw_data_base=/scratch/$USER/TDSC-ABUS-2023/apis/
 export nnUNet_preprocessed=/scratch/$USER/TDSC-ABUS-2023/apis/preprocessed/
 export RESULTS_FOLDER=/scratch/$USER/TDSC-ABUS-2023/apis/trained_models/
 
-nnUNet2_plan_and_preprocess -t "$1" --verify_dataset_integrity #-pl3d None
+nnUNetv2_plan_and_preprocess -t "$1" --verify_dataset_integrity #-pl3d None

@@ -12,4 +12,4 @@ export nnUNet_raw_data_base=/scratch/$USER/TDSC-ABUS-2023/apis/
 export nnUNet_preprocessed=/scratch/$USER/TDSC-ABUS-2023/apis/preprocessed/
 export RESULTS_FOLDER=/scratch/$USER/TDSC-ABUS-2023/apis/trained_models/
 
-nnUNet_find_best_configuration -m 2d 3d_fullres -t "$1"
+nnUNetv2_find_best_configuration -m 2d 3d_fullres -t "$1"
