@@ -50,7 +50,7 @@ class LabelManager(object):
 
     def _sanity_check(self, label_dict: dict):
         if not 'background' in label_dict.keys():
-            raise RuntimeError('Background label not declared (remeber that this should be label 0!)')
+            raise RuntimeError('Background label not declared (remember that this should be label 0!)')
         bg_label = label_dict['background']
         if isinstance(bg_label, (tuple, list)):
             raise RuntimeError(f"Background label must be 0. Not a list. Not a tuple. Your background label: {bg_label}")
@@ -157,7 +157,7 @@ class LabelManager(object):
             # check correct number of outputs
         assert predicted_probabilities.shape[0] == self.num_segmentation_heads, \
             f'unexpected number of channels in predicted_probabilities. Expected {self.num_segmentation_heads}, ' \
-            f'got {predicted_probabilities.shape[0]}. Remeber that predicted_probabilities should have shape ' \
+            f'got {predicted_probabilities.shape[0]}. Remember that predicted_probabilities should have shape ' \
             f'(c, x, y(, z)).'
 
         if self.has_regions:
@@ -176,7 +176,10 @@ class LabelManager(object):
 
     def convert_logits_to_segmentation(self, predicted_logits: Union[np.ndarray, torch.Tensor]) -> \
             Union[np.ndarray, torch.Tensor]:
+        input_is_numpy = isinstance(predicted_logits, np.ndarray)
         probabilities = self.apply_inference_nonlin(predicted_logits)
+        if input_is_numpy and isinstance(probabilities, torch.Tensor):
+            probabilities = probabilities.cpu().numpy()
         return self.convert_probabilities_to_segmentation(probabilities)
 
     def revert_cropping_on_probabilities(self, predicted_probabilities: Union[torch.Tensor, np.ndarray],

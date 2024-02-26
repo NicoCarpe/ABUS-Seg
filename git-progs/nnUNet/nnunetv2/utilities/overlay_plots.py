@@ -23,7 +23,8 @@ from nnunetv2.imageio.base_reader_writer import BaseReaderWriter
 from nnunetv2.imageio.reader_writer_registry import determine_reader_writer_from_dataset_json
 from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
-from nnunetv2.utilities.utils import get_identifiers_from_splitted_dataset_folder
+from nnunetv2.utilities.utils import get_identifiers_from_splitted_dataset_folder, \
+    get_filenames_of_train_images_and_targets
 
 color_cycle = (
     "000000",
@@ -64,9 +65,9 @@ def generate_overlay(input_image: np.ndarray, segmentation: np.ndarray, mapping:
     # create a copy of image
     image = np.copy(input_image)
 
-    if len(image.shape) == 2:
+    if image.ndim == 2:
         image = np.tile(image[:, :, None], (1, 1, 3))
-    elif len(image.shape) == 3:
+    elif image.ndim == 3:
         if image.shape[2] == 1:
             image = np.tile(image, (1, 1, 3))
         else:
@@ -135,10 +136,10 @@ def plot_overlay(image_file: str, segmentation_file: str, image_reader_writer: B
     seg, props_seg = image_reader_writer.read_seg(segmentation_file)
     seg = seg[0]
 
-    assert all([i == j for i, j in zip(image.shape, seg.shape)]), "image and seg do not have the same shape: %s, %s" % (
+    assert image.shape == seg.shape, "image and seg do not have the same shape: %s, %s" % (
         image_file, segmentation_file)
 
-    assert len(image.shape) == 3, 'only 3D images/segs are supported'
+    assert image.ndim == 3, 'only 3D images/segs are supported'
 
     selected_slice = select_slice_to_plot2(image, seg)
     # print(image.shape, selected_slice)
@@ -191,16 +192,16 @@ def generate_overlays_from_raw(dataset_name_or_id: Union[int, str], output_folde
     dataset_name = maybe_convert_to_dataset_name(dataset_name_or_id)
     folder = join(nnUNet_raw, dataset_name)
     dataset_json = load_json(join(folder, 'dataset.json'))
-    identifiers = get_identifiers_from_splitted_dataset_folder(join(folder, 'imagesTr'), dataset_json['file_ending'])
+    dataset = get_filenames_of_train_images_and_targets(folder, dataset_json)
 
-    image_files = [join(folder, 'imagesTr', i + "_%04.0d.nii.gz" % channel_idx) for i in identifiers]
-    seg_files = [join(folder, 'labelsTr', i + ".nii.gz") for i in identifiers]
+    image_files = [v['images'][channel_idx] for v in dataset.values()]
+    seg_files = [v['label'] for v in dataset.values()]
 
     assert all([isfile(i) for i in image_files])
     assert all([isfile(i) for i in seg_files])
 
     maybe_mkdir_p(output_folder)
-    output_files = [join(output_folder, i + '.png') for i in identifiers]
+    output_files = [join(output_folder, i + '.png') for i in dataset.keys()]
 
     image_reader_writer = determine_reader_writer_from_dataset_json(dataset_json, image_files[0])()
     multiprocessing_plot_overlay(image_files, seg_files, image_reader_writer, output_files, overlay_intensity, num_processes)

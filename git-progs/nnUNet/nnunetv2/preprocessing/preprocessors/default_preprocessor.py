@@ -26,7 +26,7 @@ from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_datas
 from nnunetv2.utilities.find_class_by_name import recursive_find_python_class
 from nnunetv2.utilities.plans_handling.plans_handler import PlansManager, ConfigurationManager
 from nnunetv2.utilities.utils import get_identifiers_from_splitted_dataset_folder, \
-    create_lists_from_splitted_dataset_folder
+    create_lists_from_splitted_dataset_folder, get_filenames_of_train_images_and_targets
 from tqdm import tqdm
 
 
@@ -43,6 +43,7 @@ class DefaultPreprocessor(object):
         # let's not mess up the inputs!
         data = np.copy(data)
         if seg is not None:
+            assert data.shape[1:] == seg.shape[1:], "Shape mismatch between image and segmentation. Please fix your dataset and make use of the --verify_dataset_integrity flag to ensure everything is correct"
             seg = np.copy(seg)
 
         has_seg = seg is not None
@@ -67,7 +68,7 @@ class DefaultPreprocessor(object):
 
         if len(target_spacing) < len(data.shape[1:]):
             # target spacing for 2d has 2 entries but the data and original_spacing have three because everything is 3d
-            # in 3d we do not change the spacing between slices
+            # in 2d configuration we do not change the spacing between slices
             target_spacing = [original_spacing[0]] + target_spacing
         new_shape = compute_new_shape(data.shape[1:], original_spacing, target_spacing)
 
@@ -127,7 +128,7 @@ class DefaultPreprocessor(object):
         rw = plans_manager.image_reader_writer_class()
 
         # load image(s)
-        data, data_properites = rw.read_images(image_files)
+        data, data_properties = rw.read_images(image_files)
 
         # if possible, load seg
         if seg_file is not None:
@@ -135,9 +136,9 @@ class DefaultPreprocessor(object):
         else:
             seg = None
 
-        data, seg = self.run_case_npy(data, seg, data_properites, plans_manager, configuration_manager,
+        data, seg = self.run_case_npy(data, seg, data_properties, plans_manager, configuration_manager,
                                       dataset_json)
-        return data, seg, data_properites
+        return data, seg, data_properties
 
     def run_case_save(self, output_filename_truncated: str, image_files: List[str], seg_file: str,
                       plans_manager: PlansManager, configuration_manager: ConfigurationManager,
@@ -184,7 +185,7 @@ class DefaultPreprocessor(object):
                                                            scheme,
                                                            'nnunetv2.preprocessing.normalization')
             if normalizer_class is None:
-                raise RuntimeError('Unable to locate class \'%s\' for normalization' % scheme)
+                raise RuntimeError(f'Unable to locate class \'{scheme}\' for normalization')
             normalizer = normalizer_class(use_mask_for_norm=configuration_manager.use_mask_for_norm[c],
                                           intensityproperties=foreground_intensity_properties_per_channel[str(c)])
             data[c] = normalizer.run(data[c], seg[0])
@@ -214,8 +215,6 @@ class DefaultPreprocessor(object):
         dataset_json_file = join(nnUNet_preprocessed, dataset_name, 'dataset.json')
         dataset_json = load_json(dataset_json_file)
 
-        identifiers = get_identifiers_from_splitted_dataset_folder(join(nnUNet_raw, dataset_name, 'imagesTr'),
-                                                               dataset_json['file_ending'])
         output_directory = join(nnUNet_preprocessed, dataset_name, configuration_manager.data_identifier)
 
         if isdir(output_directory):
@@ -223,31 +222,34 @@ class DefaultPreprocessor(object):
 
         maybe_mkdir_p(output_directory)
 
-        output_filenames_truncated = [join(output_directory, i) for i in identifiers]
+        dataset = get_filenames_of_train_images_and_targets(join(nnUNet_raw, dataset_name), dataset_json)
 
-        file_ending = dataset_json['file_ending']
-        # list of lists with image filenames
-        image_fnames = create_lists_from_splitted_dataset_folder(join(nnUNet_raw, dataset_name, 'imagesTr'), file_ending,
-                                                                 identifiers)
-        # list of segmentation filenames
-        seg_fnames = [join(nnUNet_raw, dataset_name, 'labelsTr', i + file_ending) for i in identifiers]
+        # identifiers = [os.path.basename(i[:-len(dataset_json['file_ending'])]) for i in seg_fnames]
+        # output_filenames_truncated = [join(output_directory, i) for i in identifiers]
 
         # multiprocessing magic.
         r = []
         with multiprocessing.get_context("spawn").Pool(num_processes) as p:
-            for outfile, infiles, segfiles in zip(output_filenames_truncated, image_fnames, seg_fnames):
+            for k in dataset.keys():
                 r.append(p.starmap_async(self.run_case_save,
-                                         ((outfile, infiles, segfiles, plans_manager, configuration_manager,
+                                         ((join(output_directory, k), dataset[k]['images'], dataset[k]['label'],
+                                           plans_manager, configuration_manager,
                                            dataset_json),)))
-            remaining = list(range(len(output_filenames_truncated)))
-            # p is pretty nitfi. If we kill workers they just respawn but don't do any work.
+            remaining = list(range(len(dataset)))
+            # p is pretty nifti. If we kill workers they just respawn but don't do any work.
             # So we need to store the original pool of workers.
             workers = [j for j in p._pool]
-            with tqdm(desc=None, total=len(output_filenames_truncated), disable=self.verbose) as pbar:
+            with tqdm(desc=None, total=len(dataset), disable=self.verbose) as pbar:
                 while len(remaining) > 0:
                     all_alive = all([j.is_alive() for j in workers])
                     if not all_alive:
-                        raise RuntimeError('Some background worker is 6 feet under. Yuck.')
+                        raise RuntimeError('Some background worker is 6 feet under. Yuck. \n'
+                                           'OK jokes aside.\n'
+                                           'One of your background processes is missing. This could be because of '
+                                           'an error (look for an error message) or because it was killed '
+                                           'by your OS due to running out of RAM. If you don\'t see '
+                                           'an error message, out of RAM is likely the problem. In that case '
+                                           'reducing the number of workers might help')
                     done = [i for i in remaining if r[i].ready()]
                     for _ in done:
                         pbar.update()

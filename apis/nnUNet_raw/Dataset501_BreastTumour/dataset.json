@@ -8,7 +8,7 @@
    "tumour": 1
  }, 
 
- "numTraining": 5,
+ "numTraining": 100,
 
  "file_ending": ".nii.gz"
  }
