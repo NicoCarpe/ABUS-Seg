@@ -18,8 +18,8 @@ This project focuses on tumour segmentation in Automated 3D Breast Ultrasound (A
 1. Run gpu_preproc.sh with the dataset code "501" as a flag to create a dataset fingerprint
 2. Then use gpu_train.sh specifying which one of the models to use, for example:
    - for i in {0..4}; do sbatch gpu_train.sh 501 3d_lowres $i; done  
-3. You can use nnfind_bestconfig.sh to compare different model performances.
-4. Perform testing using gpu_predict.sh to produce the image segmentations (this can accommodate ensemble learning using multiple models if desired).
+3. Use nnfind_bestconfig.sh to compare different model ensembles and find the optimal configuration for performance.
+4. Configure the gpu_predict.sh file with the optimal ensemble and run to produce the image segmentations.
 
 
 ## Acknowledgments
