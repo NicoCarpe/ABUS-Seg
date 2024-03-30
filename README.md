@@ -1,5 +1,7 @@
 # Automated-3D-Breast-Ultrasound-Segmentation
 
+![Segmentation results.](https://github.com/NicoCarpe/Automated-3D-Breast-Ultrasound-Segmentation/results_image.png)
+
 ## Project Description
 
 This project focuses on tumour segmentation in Automated 3D Breast Ultrasound (ABUS) images, aiming to provide an efficient and accurate method for assisting in the diagnosis of breast cancer. The nnUNet framework was used in this project for its ability to automatically configure itself to work optimally with a given dataset and its flexibility in comparing segmentation using either 2D slices or 3D volumetric data.
