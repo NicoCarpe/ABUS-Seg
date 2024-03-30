@@ -1,6 +1,6 @@
 # Automated-3D-Breast-Ultrasound-Segmentation
 
-![Segmentation results.](https://github.com/NicoCarpe/Automated-3D-Breast-Ultrasound-Segmentation/results_image.png)
+![Segmentation results.](results_image.png)
 
 ## Project Description
 
