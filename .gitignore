@@ -1,10 +1,4 @@
-apis/raw_train_data/
-apis/nnUNet_raw/Dataset501_BreastTumour/
-apis/nnUNet_raw/Dataset501_BreastTumour/!dataset.json
-apis/abus_env/
-apis/nnUNet_preprocessed/Dataset501_BreastTumour/
-apis/nnUNet_results/Dataset501_BreastTumour/
-DATA00_49-002.zip
-DATA50_99-001.zip
-MASK.zip
-apis/*.out
+data/
+scripts/slurm_logs/
+outputs/*
+nnUNet/
